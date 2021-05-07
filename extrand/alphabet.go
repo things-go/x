@@ -5,8 +5,7 @@ import (
 	"math/bits"
 	"math/rand"
 	"time"
-
-	"github.com/things-go/x/internal/bytesconv"
+	"unsafe"
 )
 
 // previous defined bytes
@@ -18,32 +17,35 @@ var (
 )
 
 // Alphabet rand alpha with give length(只包含字母)
-func Alphabet(length int) string { return bytesconv.Bytes2Str(AlphabetBytes(length)) }
+func Alphabet(length int) string { return randString(length, DefaultAlphabet) }
 
 // AlphabetBytes rand alpha with give length(只包含字母)
 func AlphabetBytes(length int) []byte { return randBytes(length, DefaultAlphabet) }
 
 // Number rand string with give length(只包含数字)
-func Number(length int) string { return bytesconv.Bytes2Str(NumberBytes(length)) }
+func Number(length int) string { return randString(length, DefaultDigit) }
 
 // NumberBytes rand string with give length(只包含数字)
 func NumberBytes(length int) []byte { return randBytes(length, DefaultDigit) }
 
 // AlphaNumber rand string with give length(只包含字母, 数字)
-func AlphaNumber(length int) string { return bytesconv.Bytes2Str(AlphaNumberBytes(length)) }
+func AlphaNumber(length int) string { return randString(length, DefaultAlphaDigit) }
 
 // AlphaNumberBytes rand string with give length(只包含字母, 数字)
 func AlphaNumberBytes(length int) []byte { return randBytes(length, DefaultAlphaDigit) }
 
 // Symbol rand symbol with give length(只包含字母, 数字, 特殊符号)
-func Symbol(length int) string { return bytesconv.Bytes2Str(SymbolBytes(length)) }
+func Symbol(length int) string { return randString(length, DefaultSymbol) }
 
 // SymbolBytes rand symbol with give length(只包含字母, 数字, 特殊符号)
 func SymbolBytes(length int) []byte { return randBytes(length, DefaultSymbol) }
 
 // String rand bytes(如果没有给出alphabets,将使用 DefaultAlphabet)
 func String(length int, alphabets ...byte) string {
-	return bytesconv.Bytes2Str(Bytes(length, alphabets...))
+	if len(alphabets) == 0 {
+		alphabets = DefaultAlphaDigit
+	}
+	return randString(length, alphabets)
 }
 
 // Bytes rand bytes(如果没有给出alphabets,将使用 DefaultAlphabet)
@@ -52,6 +54,11 @@ func Bytes(length int, alphabets ...byte) []byte {
 		alphabets = DefaultAlphaDigit
 	}
 	return randBytes(length, alphabets)
+}
+
+func randString(length int, alphabets []byte) string {
+	b := randBytes(length, alphabets)
+	return *(*string)(unsafe.Pointer(&b))
 }
 
 func randBytes(length int, alphabets []byte) []byte {

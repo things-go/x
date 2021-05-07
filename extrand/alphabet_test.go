@@ -10,10 +10,15 @@ import (
 
 func TestImproveCoverage(t *testing.T) {
 	t.Log(Alphabet(16))
+	t.Log(string(AlphabetBytes(16)))
 	t.Log(Number(16))
+	t.Log(string(NumberBytes(16)))
 	t.Log(AlphaNumber(16))
+	t.Log(string(AlphaNumberBytes(16)))
 	t.Log(Symbol(16))
+	t.Log(string(SymbolBytes(16)))
 	t.Log(String(16))
+	t.Log(string(Bytes(16)))
 	t.Log(String(16, DefaultAlphabet...))
 	t.Log(String(16, DefaultAlphaDigit...))
 	t.Log(String(16, DefaultDigit...))

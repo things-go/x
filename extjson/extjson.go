@@ -2,8 +2,7 @@ package extjson
 
 import (
 	"encoding/json"
-
-	"github.com/things-go/x/internal/bytesconv"
+	"unsafe"
 )
 
 // MarshalToString convenient method to write as string instead of []byte
@@ -12,7 +11,7 @@ func MarshalToString(v interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return bytesconv.Bytes2Str(b), nil
+	return *(*string)(unsafe.Pointer(&b)), nil
 }
 
 // MarshalIndentToString is like Marshal but applies Indent to format the output.
@@ -21,7 +20,7 @@ func MarshalIndentToString(v interface{}, prefix, indent string) (string, error)
 	if err != nil {
 		return "", err
 	}
-	return bytesconv.Bytes2Str(b), nil
+	return *(*string)(unsafe.Pointer(&b)), nil
 }
 
 // UnmarshalFromString is a convenient method to read from string instead of []byte

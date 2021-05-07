@@ -3,7 +3,7 @@
 
 [![GoDoc](https://godoc.org/github.com/things-go/x?status.svg)](https://godoc.org/github.com/things-go/x)
 [![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/things-go/x?tab=doc)
-[![Build Status](https://www.travis-ci.org/things-go/x.svg?branch=master)](https://www.travis-ci.org/things-go/x)
+[![Build Status](https://www.travis-ci.com/things-go/x.svg?branch=master)](https://www.travis-ci.com/things-go/x)
 [![codecov](https://codecov.io/gh/things-go/x/branch/master/graph/badge.svg)](https://codecov.io/gh/things-go/x)
 ![Action Status](https://github.com/things-go/x/workflows/Go/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/things-go/x)](https://goreportcard.com/report/github.com/things-go/x)
