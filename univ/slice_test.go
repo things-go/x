@@ -862,7 +862,7 @@ func TestUint64Slice(t *testing.T) {
 
 func TestStringSlice(t *testing.T) {
 	require.Panics(t, func() {
-		StringSlice("err")
+		StringSlice([]struct{}{{}})
 	})
 	tests := []struct {
 		name string
