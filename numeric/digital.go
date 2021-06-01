@@ -44,11 +44,20 @@ func BuildUint64(lo32, hi32 uint32) uint64 {
 	return uint64(lo32) | uint64(hi32)<<32
 }
 
+// Reverse reverse a slice
+func Reverse(n int, f func(from, to int)) {
+	if n < 1 {
+		return
+	}
+	for from, to := 0, n-1; from < to; from, to = from+1, to-1 {
+		f(from, to)
+	}
+}
+
 // ReverseBytes reverse []byte
 func ReverseBytes(b []byte) []byte {
-	for from, to := 0, len(b)-1; from < to; from, to = from+1, to-1 {
+	Reverse(len(b), func(from, to int) {
 		b[from], b[to] = b[to], b[from]
-	}
-
+	})
 	return b
 }

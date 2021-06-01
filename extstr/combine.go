@@ -7,6 +7,7 @@ import (
 
 // Recombine 转换驼峰字符串为用delimiter分隔的字符串
 // example: delimiter = '_'
+// 空字符 -> 空字符
 // HelloWorld -> hello_world
 // Hello_World -> hello_world
 // HiHello_World -> hi_hello_world
@@ -61,6 +62,7 @@ func Recombine(str string, delimiter byte) string {
 
 // UnRecombine 转换sep分隔的字符串为驼峰字符串
 // example: delimiter = '_'
+// 空字符 -> 空字符
 // hello_world -> HelloWorld
 func UnRecombine(str string, delimiter byte) string {
 	str = strings.TrimSpace(str)
@@ -80,17 +82,18 @@ type Recode struct {
 	replacer *strings.Replacer
 }
 
-// NewRecode 创建一个Recode,以initialisms为自定义的Replacer
+// NewRecode 创建一个Recode,以initialism为自定义的Replacer
 // example:
 // API -> api
 // ID -> id
-func NewRecode(initialisms []string) *Recode {
-	initialismsForReplacer := make([]string, 0, len(initialisms)*2)
-	for _, s := range initialisms {
-		initialismsForReplacer = append(initialismsForReplacer, s, strings.Title(strings.ToLower(s)))
+func NewRecode(initialism []string) *Recode {
+	initialismForReplacer := make([]string, 0, len(initialism)*2)
+	for _, s := range initialism {
+		initialismForReplacer = append(initialismForReplacer, s, strings.Title(strings.ToLower(s)))
 	}
-
-	return &Recode{replacer: strings.NewReplacer(initialismsForReplacer...)}
+	return &Recode{
+		replacer: strings.NewReplacer(initialismForReplacer...),
+	}
 }
 
 // Recombine 转换驼峰字符串为用sep分隔的字符串,特殊字符由initialisms决定取代
@@ -103,7 +106,7 @@ func NewRecode(initialisms []string) *Recode {
 // IDcom -> idcom
 // nameIDCom -> name_id_com
 // nameIDcom -> name_idcom
-func (sf Recode) Recombine(str string, delimiter byte) string {
+func (sf *Recode) Recombine(str string, delimiter byte) string {
 	return Recombine(sf.replacer.Replace(str), delimiter)
 }
 
@@ -119,12 +122,12 @@ var (
 )
 
 func init() {
-	initialismsForReplacer := make([]string, 0, len(DefaultInitialisms)*2)
+	initialismForReplacer := make([]string, 0, len(DefaultInitialisms)*2)
 	for _, s := range DefaultInitialisms {
-		initialismsForReplacer = append(initialismsForReplacer, s, strings.Title(strings.ToLower(s)))
+		initialismForReplacer = append(initialismForReplacer, s, strings.Title(strings.ToLower(s)))
 	}
 
-	defaultReplacer = strings.NewReplacer(initialismsForReplacer...)
+	defaultReplacer = strings.NewReplacer(initialismForReplacer...)
 }
 
 // SnakeCase 转换驼峰字符串为用'_'分隔的字符串,特殊字符由DefaultInitialisms决定取代
@@ -185,7 +188,7 @@ func isSeparator(r rune) bool {
 
 // LowTitle 首字母小写
 // see strings.Title
-func LowTitle(str string) string {
+func LowTitle(s string) string {
 	// Use a closure here to remember state.
 	// Hackish but effective. Depends on Map scanning in order and calling
 	// the closure once per rune.
@@ -197,5 +200,5 @@ func LowTitle(str string) string {
 		}
 		prev = r
 		return r
-	}, str)
+	}, s)
 }

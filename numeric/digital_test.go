@@ -167,6 +167,56 @@ func TestBuildUint64(t *testing.T) {
 	}
 }
 
+func TestReverse(t *testing.T) {
+	type args struct {
+		b []interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want []interface{}
+	}{
+		{"Reverse no size number", args{[]interface{}{}}, []interface{}{}},
+		{"Reverse one number", args{[]interface{}{1}}, []interface{}{1}},
+		{"Reverse number", args{[]interface{}{1, 2, 3, 4, 5}}, []interface{}{5, 4, 3, 2, 1}},
+		{"Reverse string", args{[]interface{}{"1", "2", "3", "4", "5"}}, []interface{}{"5", "4", "3", "2", "1"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Reverse(len(tt.args.b), func(from, to int) {
+				tt.args.b[from], tt.args.b[to] = tt.args.b[to], tt.args.b[from]
+			})
+			if !reflect.DeepEqual(tt.args.b, tt.want) {
+				t.Errorf("ReverseBytes() = %v, want %v", tt.args.b, tt.want)
+			}
+		})
+	}
+}
+
+func TestReverseString(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"Reverse String", args{"hello"}, "olleh"},
+	}
+	for _, tt := range tests {
+		got := []rune(tt.args.s)
+		Reverse(len(got), func(from, to int) {
+			got[from], got[to] = got[to], got[from]
+		})
+		t.Run(tt.name, func(t *testing.T) {
+			if string(got) != tt.want {
+				t.Errorf("Reverse() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestReverseBytes(t *testing.T) {
 	type args struct {
 		b []byte

@@ -130,8 +130,8 @@ func WriteFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0655)
 }
 
-// Filepaths returns all root dir (contain sub dir) file full path
-func Filepaths(root string) ([]string, error) {
+// FilePaths returns all root dir (contain sub dir) file full path
+func FilePaths(root string) ([]string, error) {
 	var result = make([]string, 0)
 
 	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
