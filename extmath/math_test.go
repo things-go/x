@@ -126,3 +126,20 @@ func TestRange(t *testing.T) {
 	res2 := Range(start, end)
 	require.True(t, len(res2) == 1)
 }
+
+func TestIsPowOf2(t *testing.T) {
+	for _, v := range RangeInt64(0, math.MaxInt8) {
+		require.True(t, IsPowOf2((int64(math.Pow(2, float64(v))))), v)
+	}
+	require.False(t, IsPowOf2(100))
+}
+
+func TestNextPowOf2(t *testing.T) {
+	for _, v := range RangeInt64(3, math.MaxInt16) {
+		want := int64(math.Pow(2, float64(v)))
+		got := NextPowOf2(want - 2)
+		require.Equal(t, want, got)
+		require.True(t, IsPowOf2(got))
+	}
+	require.True(t, IsPowOf2(NextPowOf2(math.MaxInt64-200)))
+}
