@@ -5,21 +5,46 @@ import (
 	"unicode"
 )
 
-// Recombine 转换驼峰字符串为用delimiter分隔的字符串
+var (
+	// DefaultInitialisms default initialism for snake case
+	DefaultInitialisms = []string{
+		"ACL", "API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML",
+		"HTTP", "HTTPS", "ID", "IP", "JSON", "LHS", "QPS", "RAM", "RHS",
+		"RPC", "SLA", "SMTP", "SQL", "SSH", "TCP", "TLS", "TTL", "UDP",
+		"UI", "UID", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XMPP",
+		"XSRF", "XSS"}
+	defaultReplacer *strings.Replacer
+	// commonInitialisms is a set of common initialisms.
+	// source: https://github.com/golang/lint/blob/master/lint.go
+	commonInitialisms = map[string]bool{}
+)
+
+func init() {
+	initialismForReplacer := make([]string, 0, len(DefaultInitialisms)*2)
+	for _, s := range DefaultInitialisms {
+		initialismForReplacer = append(initialismForReplacer, s, strings.Title(strings.ToLower(s)))
+		commonInitialisms[s] = true
+	}
+
+	defaultReplacer = strings.NewReplacer(initialismForReplacer...)
+}
+
+// Recombine 转换驼峰字符串为用delimiter分隔的字符串, 特殊字符由DefaultInitialisms决定取代
 // example: delimiter = '_'
 // 空字符 -> 空字符
 // HelloWorld -> hello_world
 // Hello_World -> hello_world
 // HiHello_World -> hi_hello_world
 // IDCom -> id_com
-// IDcom -> i_dcom
+// IDcom -> idcom
 // nameIDCom -> name_id_com
-// nameIDcom -> name_i_dcom
+// nameIDcom -> name_idcom
 func Recombine(str string, delimiter byte) string {
 	str = strings.TrimSpace(str)
 	if str == "" {
 		return ""
 	}
+	str = defaultReplacer.Replace(str)
 
 	var isLastCaseUpper bool
 	var isCurrCaseUpper bool
@@ -70,64 +95,33 @@ func UnRecombine(str string, delimiter byte) string {
 		return ""
 	}
 
-	bStr := strings.Builder{}
-	for _, s := range strings.Split(str, string(delimiter)) {
-		bStr.WriteString(strings.Title(s))
-	}
-	return bStr.String()
-}
+	var b strings.Builder
+	var words []string
 
-// Recode 重组转换一些特殊的字符
-type Recode struct {
-	replacer *strings.Replacer
-}
-
-// NewRecode 创建一个Recode,以initialism为自定义的Replacer
-// example:
-// API -> api
-// ID -> id
-func NewRecode(initialism []string) *Recode {
-	initialismForReplacer := make([]string, 0, len(initialism)*2)
-	for _, s := range initialism {
-		initialismForReplacer = append(initialismForReplacer, s, strings.Title(strings.ToLower(s)))
-	}
-	return &Recode{
-		replacer: strings.NewReplacer(initialismForReplacer...),
-	}
-}
-
-// Recombine 转换驼峰字符串为用sep分隔的字符串,特殊字符由initialisms决定取代
-// example1: delimiter = '_'
-// HelloWorld -> hello_world
-// Hello_World -> hello_world
-// HiHello_World -> hi_hello_world
-// example2: delimiter = '_' initialisms = [ID]
-// IDCom -> id_com
-// IDcom -> idcom
-// nameIDCom -> name_id_com
-// nameIDcom -> name_idcom
-func (sf *Recode) Recombine(str string, delimiter byte) string {
-	return Recombine(sf.replacer.Replace(str), delimiter)
-}
-
-var (
-	// DefaultInitialisms default initialism for snake case
-	DefaultInitialisms = []string{
-		"API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP",
-		"HTTPS", "ID", "IP", "JSON", "LHS", "QPS", "RAM", "RHS", "RPC", "SLA",
-		"SMTP", "SSH", "TLS", "TTL", "UID", "UI", "UUID", "URI", "URL", "UTF8",
-		"VM", "XML", "XSRF", "XSS",
-	}
-	defaultReplacer *strings.Replacer
-)
-
-func init() {
-	initialismForReplacer := make([]string, 0, len(DefaultInitialisms)*2)
-	for _, s := range DefaultInitialisms {
-		initialismForReplacer = append(initialismForReplacer, s, strings.Title(strings.ToLower(s)))
+	var i int
+	for s := str; s != ""; s = s[i:] { // split on upper letter or _
+		i = strings.IndexFunc(s[1:], unicode.IsUpper) + 1
+		if i <= 0 {
+			i = len(s)
+		}
+		word := s[:i]
+		words = append(words, strings.Split(word, string(delimiter))...)
 	}
 
-	defaultReplacer = strings.NewReplacer(initialismForReplacer...)
+	// words := strings.Split(fieldName, "_")
+	for _, word := range words {
+		if u := strings.ToUpper(word); commonInitialisms[u] {
+			b.WriteString(u)
+			continue
+		}
+
+		out := strings.ToUpper(string(word[0]))
+		if len(word) > 1 {
+			out += strings.ToLower(word[1:])
+		}
+		b.WriteString(out)
+	}
+	return b.String()
 }
 
 // SnakeCase 转换驼峰字符串为用'_'分隔的字符串,特殊字符由DefaultInitialisms决定取代
@@ -137,7 +131,7 @@ func init() {
 // nameIDCom -> name_id_com
 // nameIDcom -> name_idcom
 func SnakeCase(str string) string {
-	return Recombine(defaultReplacer.Replace(str), '_')
+	return Recombine(str, '_')
 }
 
 // Kebab 转换驼峰字符串为用'-'分隔的字符串,特殊字符由DefaultInitialisms决定取代
@@ -147,13 +141,13 @@ func SnakeCase(str string) string {
 // nameIDCom -> name-id-com
 // nameIDcom -> name-idcom
 func Kebab(str string) string {
-	return Recombine(defaultReplacer.Replace(str), '-')
+	return Recombine(str, '-')
 }
 
 // CamelCase to camel case string
-// id_com -> IdCom
+// id_com -> IDCom
 // idcom -> Idcom
-// name_id_com -> NameIdCom
+// name_id_com -> NameIDCom
 // name_idcom -> NameIdcom
 func CamelCase(str string) string {
 	return UnRecombine(str, '_')

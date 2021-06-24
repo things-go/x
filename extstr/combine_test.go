@@ -68,7 +68,7 @@ func TestRecombine(t *testing.T) {
 				str: "IDcom",
 				sep: '_',
 			},
-			"i_dcom",
+			"idcom",
 		},
 		{
 			"特殊分隔nameIDCom",
@@ -84,7 +84,7 @@ func TestRecombine(t *testing.T) {
 				str: "nameIDcom",
 				sep: '_',
 			},
-			"name_i_dcom",
+			"name_idcom",
 		},
 	}
 	for _, tt := range tests {
@@ -127,72 +127,6 @@ func TestUnRecombine(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := UnRecombine(tt.args.str, tt.args.sep); got != tt.want {
 				t.Errorf("UnRecombine() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestRecode_Recombine(t *testing.T) {
-	type args struct {
-		str string
-		sep byte
-	}
-	tests := []struct {
-		name   string
-		recode *Recode
-		args   args
-		want   string
-	}{
-		{
-			"空字符串",
-			NewRecode([]string{}),
-			args{
-				str: "",
-				sep: '_',
-			},
-			"",
-		},
-		{
-			"特殊字符IDCom",
-			NewRecode([]string{"ID"}),
-			args{
-				str: "IDCom",
-				sep: '_',
-			},
-			"id_com",
-		},
-		{
-			"特殊字符IDcom",
-			NewRecode([]string{"ID"}),
-			args{
-				str: "IDcom",
-				sep: '_',
-			},
-			"idcom",
-		},
-		{
-			"特殊字符nameIDCom",
-			NewRecode([]string{"ID"}),
-			args{
-				str: "nameIDCom",
-				sep: '_',
-			},
-			"name_id_com",
-		},
-		{
-			"特殊字符nameIDcom",
-			NewRecode([]string{"ID"}),
-			args{
-				str: "nameIDcom",
-				sep: '_',
-			},
-			"name_idcom",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.recode.Recombine(tt.args.str, tt.args.sep); got != tt.want {
-				t.Errorf("Recombine() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -303,7 +237,7 @@ func TestCamelCase(t *testing.T) {
 		{
 			"特殊字符IDCom",
 			args{str: "id_com"},
-			"IdCom",
+			"IDCom",
 		},
 		{
 			"特殊字符IDcom",
@@ -313,7 +247,7 @@ func TestCamelCase(t *testing.T) {
 		{
 			"特殊字符nameIDCom",
 			args{str: "name_id_com"},
-			"NameIdCom",
+			"NameIDCom",
 		},
 		{
 			"特殊字符nameIDcom",
