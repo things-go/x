@@ -859,3 +859,47 @@ func TestUint64Slice(t *testing.T) {
 		})
 	}
 }
+
+func TestStringSlice(t *testing.T) {
+	require.Panics(t, func() {
+		StringSlice([]struct{}{{}})
+	})
+	tests := []struct {
+		name string
+		s    interface{}
+		want []string
+	}{
+		{
+			"integer no ptr",
+			[]int{1, 2},
+			[]string{"1", "2"},
+		},
+		{
+			"integer no ptr",
+			[]uint{1, 2},
+			[]string{"1", "2"},
+		},
+		{
+			"integer no ptr",
+			[]string{"1", "2"},
+			[]string{"1", "2"},
+		},
+		{
+			"Float32 no ptr",
+			[]float32{1.1, 2.2},
+			[]string{"1.1", "2.2"},
+		},
+		{
+			"Float64 no ptr",
+			[]float64{1.1, 2.2},
+			[]string{"1.1", "2.2"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StringSlice(tt.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StructStringSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

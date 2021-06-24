@@ -80,6 +80,11 @@ func Uint64Slice(s interface{}) []uint64 {
 	return NewSlice(s).Uint64Slice()
 }
 
+// StringSlice returns a slice of uint64. For more info refer to Slice types StringSlice() method.
+func StringSlice(s interface{}) []string {
+	return NewSlice(s).StringSlice()
+}
+
 // Slice hold a slice reflect.value
 type Slice struct {
 	value reflect.Value
@@ -193,7 +198,7 @@ func (sf *Slice) IntSlice() []int {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = int(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("IntSlice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -215,7 +220,7 @@ func (sf *Slice) UintSlice() []uint {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = uint(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("UintSlice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -237,7 +242,7 @@ func (sf *Slice) Int8Slice() []int8 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = int8(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Int8Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -259,7 +264,7 @@ func (sf *Slice) Uint8Slice() []uint8 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = uint8(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Uint8Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -281,7 +286,7 @@ func (sf *Slice) Int16Slice() []int16 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = int16(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Int16Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -303,7 +308,7 @@ func (sf *Slice) Uint16Slice() []uint16 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = uint16(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Uint16Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -325,7 +330,7 @@ func (sf *Slice) Int32Slice() []int32 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = int32(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Int32Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -347,7 +352,7 @@ func (sf *Slice) Uint32Slice() []uint32 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = uint32(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Uint32Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -369,7 +374,7 @@ func (sf *Slice) Int64Slice() []int64 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = int64(v.Uint())
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Int64Slice: the value of field is not integer or float.")
 		}
 	}
 	return slice
@@ -391,7 +396,33 @@ func (sf *Slice) Uint64Slice() []uint64 {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			slice[i] = v.Uint()
 		default:
-			panic("StructSlice: the value of field is not integer or float.")
+			panic("Uint64Slice: the value of field is not integer or float.")
+		}
+	}
+	return slice
+}
+
+// StringSlice extracts the given s slice's every element, which is integer or float or string, to []string by the field.
+// It panics if the s's element is not integer or float, string, or field is not invalid.
+func (sf *Slice) StringSlice() []string {
+	length := sf.value.Len()
+	slice := make([]string, length)
+
+	for i := 0; i < length; i++ {
+		v := reflect.Indirect(sf.value.Index(i))
+		switch v.Kind() { // nolint: exhaustive
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			slice[i] = strconv.FormatInt(v.Int(), 10)
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			slice[i] = strconv.FormatUint(v.Uint(), 10)
+		case reflect.String:
+			slice[i] = v.String()
+		case reflect.Float32:
+			slice[i] = strconv.FormatFloat(v.Float(), 'f', -1, 32)
+		case reflect.Float64:
+			slice[i] = strconv.FormatFloat(v.Float(), 'f', -1, 64)
+		default:
+			panic("StringSlice: the value of field is not integer or float or string.")
 		}
 	}
 	return slice
@@ -428,6 +459,6 @@ func valueInteger(v reflect.Value) uint64 {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return v.Uint()
 	default:
-		panic("StructSlice: the value of field is not integer or float.")
+		panic("valueInteger: the value of field is not integer or float.")
 	}
 }
