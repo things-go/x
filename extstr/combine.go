@@ -1,29 +1,62 @@
 package extstr
 
 import (
+	"bytes"
+	"strconv"
 	"strings"
 	"unicode"
 )
 
 var (
-	// DefaultInitialisms default initialism for snake case
-	DefaultInitialisms = []string{
-		"ACL", "API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML",
-		"HTTP", "HTTPS", "ID", "IP", "JSON", "LHS", "QPS", "RAM", "RHS",
-		"RPC", "SLA", "SMTP", "SQL", "SSH", "TCP", "TLS", "TTL", "UDP",
-		"UI", "UID", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XMPP",
-		"XSRF", "XSS"}
-	defaultReplacer *strings.Replacer
 	// commonInitialisms is a set of common initialisms.
 	// source: https://github.com/golang/lint/blob/master/lint.go
-	commonInitialisms = map[string]bool{}
+	commonInitialisms = map[string]struct{}{
+		"ACL":   {},
+		"API":   {},
+		"ASCII": {},
+		"CPU":   {},
+		"CSS":   {},
+		"DNS":   {},
+		"EOF":   {},
+		"GUID":  {},
+		"HTML":  {},
+		"HTTP":  {},
+		"HTTPS": {},
+		"ID":    {},
+		"IP":    {},
+		"JSON":  {},
+		"LHS":   {},
+		"QPS":   {},
+		"RAM":   {},
+		"RHS":   {},
+		"RPC":   {},
+		"SLA":   {},
+		"SMTP":  {},
+		"SQL":   {},
+		"SSH":   {},
+		"TCP":   {},
+		"TLS":   {},
+		"TTL":   {},
+		"UDP":   {},
+		"UI":    {},
+		"UID":   {},
+		"UUID":  {},
+		"URI":   {},
+		"URL":   {},
+		"UTF8":  {},
+		"VM":    {},
+		"XML":   {},
+		"XMPP":  {},
+		"XSRF":  {},
+		"XSS":   {},
+	}
+	defaultReplacer *strings.Replacer
 )
 
 func init() {
-	initialismForReplacer := make([]string, 0, len(DefaultInitialisms)*2)
-	for _, s := range DefaultInitialisms {
+	initialismForReplacer := make([]string, 0, len(commonInitialisms)*2)
+	for s := range commonInitialisms {
 		initialismForReplacer = append(initialismForReplacer, s, strings.Title(strings.ToLower(s)))
-		commonInitialisms[s] = true
 	}
 
 	defaultReplacer = strings.NewReplacer(initialismForReplacer...)
@@ -98,8 +131,7 @@ func UnRecombine(str string, delimiter byte) string {
 	var b strings.Builder
 	var words []string
 
-	var i int
-	for s := str; s != ""; s = s[i:] { // split on upper letter or _
+	for i, s := 0, str; s != ""; s = s[i:] { // split on upper letter or _
 		i = strings.IndexFunc(s[1:], unicode.IsUpper) + 1
 		if i <= 0 {
 			i = len(s)
@@ -108,10 +140,15 @@ func UnRecombine(str string, delimiter byte) string {
 		words = append(words, strings.Split(word, string(delimiter))...)
 	}
 
-	// words := strings.Split(fieldName, "_")
-	for _, word := range words {
-		if u := strings.ToUpper(word); commonInitialisms[u] {
+	for i, word := range words {
+		u := strings.ToUpper(word)
+		if _, ok := commonInitialisms[u]; ok {
 			b.WriteString(u)
+			continue
+		}
+
+		word = removeInvalidChars(word, i == 0) // on 0 remove first digits
+		if word == "" {
 			continue
 		}
 
@@ -121,6 +158,14 @@ func UnRecombine(str string, delimiter byte) string {
 		}
 		b.WriteString(out)
 	}
+
+	if b.Len() == 0 { // check if this is number
+		if _, err := strconv.Atoi(str); err == nil {
+			b.WriteString("Key")
+			b.WriteString(str)
+		}
+	}
+
 	return b.String()
 }
 
@@ -151,6 +196,44 @@ func Kebab(str string) string {
 // name_idcom -> NameIdcom
 func CamelCase(str string) string {
 	return UnRecombine(str, '_')
+}
+
+// SmallCamelCase to small camel case string
+// id_com -> idCom
+// idcom -> idcom
+// name_id_com -> nameIDCom
+// name_idcom -> nameIdcom
+func SmallCamelCase(fieldName string) string {
+	fieldName = CamelCase(fieldName)
+	for k := range commonInitialisms {
+		if strings.HasPrefix(fieldName, k) {
+			return strings.Replace(fieldName, k, strings.ToLower(k), 1)
+		}
+	}
+	return LowTitle(fieldName)
+}
+
+func removeInvalidChars(s string, removeFirstDigit bool) string {
+	var buf bytes.Buffer
+
+	for _, b := range []byte(s) {
+		if b >= 97 && b <= 122 { // a-z
+			buf.WriteByte(b)
+			continue
+		}
+		if b >= 65 && b <= 90 { // A-Z
+			buf.WriteByte(b)
+			continue
+		}
+		if b >= 48 && b <= 57 { // 0-9
+			if !removeFirstDigit || buf.Len() > 0 {
+				buf.WriteByte(b)
+				continue
+			}
+		}
+	}
+
+	return buf.String()
 }
 
 // isSeparator reports whether the rune could mark a word boundary.
