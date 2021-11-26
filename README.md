@@ -19,7 +19,6 @@
 - [extrand](#extrand) 常用rand方法,使用crypto/rand
 - [extstr](#extstr) 常用字符串封装
 - [numeric](#numeric) 数值类型封装
-- [textcolor](#textcolor) 字符串文字简易加色
 - [univ](#univ) 综合库
 
 ## License
