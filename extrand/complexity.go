@@ -182,16 +182,17 @@ func (sf *Complexity) Generate(n int) string {
 	}
 }
 
-var complexity = NewComplexity()
+// use lower, upper and digit to generate a random string, and meets complexity.
+var complexity = NewComplexity(WithMeet())
 
 // IsComplexEnough return True if s meets complexity settings.
-// which use lower, upper and digit
+// which use lower, upper and digit, and meets complexity.
 func IsComplexEnough(s string) bool {
 	return complexity.IsComplexEnough(s)
 }
 
 // Generate a random string which is complex enough.
-// which use lower, upper and digit
+// which use lower, upper and digit, and meets complexity.
 func Generate(n int) string {
 	return complexity.Generate(n)
 }
