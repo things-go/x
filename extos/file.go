@@ -18,7 +18,6 @@ package extos
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -127,7 +126,7 @@ func WriteFile(filename string, data []byte) error {
 	if err := os.MkdirAll(path.Dir(filename), os.ModePerm); err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, data, 0655)
+	return os.WriteFile(filename, data, 0655)
 }
 
 // FilePaths returns all root dir (contain sub dir) file full path
