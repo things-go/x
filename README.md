@@ -15,7 +15,6 @@
 - [extjson](#extjson) 常用json
 - [extmath](#extmath) 数学常用
 - [extos](#extos) 常用os封装
-- [extrand](#extrand) 常用rand方法,使用crypto/rand
 - [extstr](#extstr) 常用字符串封装
 - [numeric](#numeric) 数值类型封装
 - [univ](#univ) 综合库
