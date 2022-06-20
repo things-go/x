@@ -16,12 +16,18 @@ func Join(elems []int64, sep string) string {
 		return strconv.FormatInt(elems[0], 10)
 	}
 	strElems := make([]string, 0, len(elems))
-	n := len(sep) * (len(elems) - 1)
+	mp := make(map[int64]struct{})
+	n := 0
 	for i := 0; i < len(elems); i++ {
+		if _, ok := mp[elems[i]]; ok {
+			continue
+		}
+		mp[elems[i]] = struct{}{}
 		v := strconv.FormatInt(elems[i], 10)
 		strElems = Append(strElems, v)
 		n += len(v)
 	}
+	n = len(sep) * (len(strElems) - 1)
 
 	var b strings.Builder
 	b.Grow(n)
@@ -43,12 +49,18 @@ func JoinInt(elems []int, sep string) string {
 		return strconv.Itoa(elems[0])
 	}
 	strElems := make([]string, 0, len(elems))
-	n := len(sep) * (len(elems) - 1)
+	n := 0
+	mp := make(map[int]struct{})
 	for i := 0; i < len(elems); i++ {
+		if _, ok := mp[elems[i]]; ok {
+			continue
+		}
+		mp[elems[i]] = struct{}{}
 		v := strconv.Itoa(elems[i])
 		strElems = Append(strElems, v)
 		n += len(v)
 	}
+	n = len(sep) * (len(strElems) - 1)
 
 	var b strings.Builder
 	b.Grow(n)
