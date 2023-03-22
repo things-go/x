@@ -18,7 +18,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 	if y := tt.Year(); y < 0 || y >= 10000 {
 		// RFC 3339 is clear that years are 4 digits exactly.
 		// See golang.org/issue/4556#c15 for more discussion.
-		return nil, errors.New("Time.MarshalJSON: year outside of range [0,9999]")
+		return nil, errors.New("extime: MarshalJSON, year outside of range [0,9999]")
 	}
 
 	b := make([]byte, 0, len(TimeLayout)+2)
@@ -31,7 +31,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implemented interface Unmarshaler
 func (t *Time) UnmarshalJSON(data []byte) error {
 	// Ignore null, like in the main JSON package.
-	if string(data) == "null" {
+	if string(data) == nullValue {
 		return nil
 	}
 	// Fractional seconds are handled implicitly by Parse.
@@ -47,7 +47,7 @@ func (t Time) MarshalText() ([]byte, error) {
 	if y := tt.Year(); y < 0 || y >= 10000 {
 		// RFC 3339 is clear that years are 4 digits exactly.
 		// See golang.org/issue/4556#c15 for more discussion.
-		return nil, errors.New("Time.MarshalJSON: year outside of range [0,9999]")
+		return nil, errors.New("extime: MarshalJSON, year outside of range [0,9999]")
 	}
 
 	b := make([]byte, 0, len(TimeLayout))
@@ -58,7 +58,7 @@ func (t Time) MarshalText() ([]byte, error) {
 // UnmarshalText implemented interface TextUnmarshaler
 func (t *Time) UnmarshalText(text []byte) error {
 	// Ignore null, like in the main JSON package.
-	if string(text) == "null" {
+	if string(text) == nullValue {
 		return nil
 	}
 	// Fractional seconds are handled implicitly by Parse.

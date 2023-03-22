@@ -11,4 +11,5 @@ const (
 	DateMonthSlashLayout = "2006/01"
 	DateMonthDotLayout   = "2006.01"
 	DateMonthNopLayout   = "200601"
+	nullValue            = "null"
 )

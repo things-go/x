@@ -19,7 +19,7 @@ func (t UnixTimestamp) MarshalJSON() ([]byte, error) {
 	if y := tt.Year(); y < 0 || y >= 10000 {
 		// RFC 3339 is clear that years are 4 digits exactly.
 		// See golang.org/issue/4556#c15 for more discussion.
-		return nil, errors.New("UnixTimestamp.MarshalJSON: year outside of range [0,9999]")
+		return nil, errors.New("extime: MarshalJSON, year outside of range [0,9999]")
 	}
 
 	return json.Marshal(tt.Unix())
@@ -29,7 +29,7 @@ func (t UnixTimestamp) MarshalJSON() ([]byte, error) {
 func (t *UnixTimestamp) UnmarshalJSON(data []byte) error {
 	var sec int64
 	// Ignore null, like in the main JSON package.
-	if string(data) == "null" {
+	if string(data) == nullValue {
 		return nil
 	}
 	err := json.Unmarshal(data, &sec)
@@ -59,7 +59,7 @@ func (t UnixNanoTimestamp) MarshalJSON() ([]byte, error) {
 	if y := tt.Year(); y < 0 || y >= 10000 {
 		// RFC 3339 is clear that years are 4 digits exactly.
 		// See golang.org/issue/4556#c15 for more discussion.
-		return nil, errors.New("UnixNanoTimestamp.MarshalJSON: year outside of range [0,9999]")
+		return nil, errors.New("extime: MarshalJSON, year outside of range [0,9999]")
 	}
 
 	return json.Marshal(tt.UnixNano())
@@ -69,7 +69,7 @@ func (t UnixNanoTimestamp) MarshalJSON() ([]byte, error) {
 func (t *UnixNanoTimestamp) UnmarshalJSON(data []byte) error {
 	var nano int64
 	// Ignore null, like in the main JSON package.
-	if string(data) == "null" {
+	if string(data) == nullValue {
 		return nil
 	}
 	err := json.Unmarshal(data, &nano)
