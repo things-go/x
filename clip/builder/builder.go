@@ -104,5 +104,5 @@ func Fprintln(w io.Writer, opts ...Option) {
 	}
 
 	template.Must(template.New("version").Parse(versionTpl)).
-		Execute(w, info) // nolint: errcheck
+		Execute(w, info) //nolint: errcheck
 }

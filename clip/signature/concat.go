@@ -72,15 +72,17 @@ func ConcatMap(mp map[string]any, hasBrace bool) string {
 		buff.WriteString("{")
 	}
 	for _, key := range keys {
-		if v := toString(mp[key]); v != "" {
-			if !first {
-				buff.WriteString("&")
-			}
-			first = false
-			buff.WriteString(key)
-			buff.WriteString("=")
-			buff.WriteString(v)
+		v := toString(mp[key])
+		if v == "" {
+			continue
 		}
+		if !first {
+			buff.WriteString("&")
+		}
+		first = false
+		buff.WriteString(key)
+		buff.WriteString("=")
+		buff.WriteString(v)
 	}
 	if hasBrace {
 		buff.WriteString("}")

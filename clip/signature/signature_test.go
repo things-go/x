@@ -107,7 +107,7 @@ func ParseRSAPrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
 	// Parse PEM block
 	var block *pem.Block
 	if block, _ = pem.Decode(key); block == nil {
-		return nil, errors.New("Invalid Key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+		return nil, errors.New("signature: Key must be a PEM encoded PKCS1 or PKCS8 key")
 	}
 
 	var parsedKey interface{}
@@ -120,7 +120,7 @@ func ParseRSAPrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
 	var pkey *rsa.PrivateKey
 	var ok bool
 	if pkey, ok = parsedKey.(*rsa.PrivateKey); !ok {
-		return nil, errors.New("Key is not a valid RSA private key")
+		return nil, errors.New("signature: Key is not a valid RSA private key")
 	}
 
 	return pkey, nil
@@ -133,7 +133,7 @@ func ParseRSAPublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
 	// Parse PEM block
 	var block *pem.Block
 	if block, _ = pem.Decode(key); block == nil {
-		return nil, errors.New("Invalid Key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+		return nil, errors.New("signature: Key must be a PEM encoded PKCS1 or PKCS8 key")
 	}
 
 	// Parse the key
@@ -149,7 +149,7 @@ func ParseRSAPublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
 	var pkey *rsa.PublicKey
 	var ok bool
 	if pkey, ok = parsedKey.(*rsa.PublicKey); !ok {
-		return nil, errors.New("Key is not a valid RSA public key")
+		return nil, errors.New("signature: Key is not a valid RSA public key")
 	}
 
 	return pkey, nil

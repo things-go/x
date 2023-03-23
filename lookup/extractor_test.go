@@ -1,6 +1,7 @@
 package lookup
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -120,8 +121,11 @@ func TestExtractor(t *testing.T) {
 	}
 }
 
-func makeTestRequest(method, path string, headers, cookie map[string]string, urlArgs url.Values) *http.Request {
-	r, _ := http.NewRequest(method, fmt.Sprintf("%v?%v", path, urlArgs.Encode()), nil)
+func makeTestRequest(method, path string, headers, cookie map[string]string, urlArgs url.Values) *http.Request { //nolint:unparam
+	r, err := http.NewRequestWithContext(context.TODO(), method, fmt.Sprintf("%v?%v", path, urlArgs.Encode()), nil) //nolint:gocritic
+	if err != nil {
+		panic(err)
+	}
 	for k, v := range headers {
 		r.Header.Set(k, v)
 	}
