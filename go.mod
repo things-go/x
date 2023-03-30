@@ -6,7 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.2
-	go.uber.org/multierr v1.10.0
+	go.uber.org/multierr v1.11.0
 	golang.org/x/crypto v0.7.0
 )
 
